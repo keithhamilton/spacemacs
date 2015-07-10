@@ -83,7 +83,7 @@ The following additional packages are enabled:
 ```
 
 ##Functions
-```
+``` emacs-lisp
   (defun zap-up-to-char (arg char)
     "Kill up to, but not including ARGth occurrence of CHAR.
   Case is ignored if 'case-fold-search' is non-nil in the current buffer.
