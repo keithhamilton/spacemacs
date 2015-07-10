@@ -9,7 +9,6 @@ If you're interested, here's what this config gets you:
 * Mode: Straight up holy mode, cause evil is really not that cool.
 * Theme: Monokai
 * Auto-Save: Original (auto-saves in-place instead of to cache)
-* 
 
 ##Layers
 The following layers are enabled:
@@ -40,7 +39,7 @@ The following additional packages are enabled:
 
 ##Keyboard Mapping
 
-```
+``` emacs-lisp
 ;; commenting/uncommenting
 (global-set-key (kbd "C-c C-r") 'comment-region)
 (global-set-key (kbd "C-c C-u") 'uncomment-region)
