@@ -46,6 +46,8 @@
    '(
      alchemist
      cider
+     color-theme
+     sphinx-doc
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -167,11 +169,15 @@
    dotspacemacs-default-package-repository nil
    )
   ;; User initialization goes here
-  
+
   ;; Default theme applied at startup
   ;;dotspacemacs-default-theme 'monokai
   ;; Display line numbers
   (global-linum-mode 1)
+
+  ;; activate jedi for python files
+  (add-hook 'python-mode-hook 'jedi:setup)
+  (setq jedi:complete-on-dot t)
 
   (defun zap-up-to-char (arg char)
     "Kill up to, but not including ARGth occurrence of CHAR.
@@ -188,13 +194,31 @@
                        (backward-char direction))
                      (point)))))
 
+  (defun move-line-up ()
+    "Move up the current line."
+    (interactive)
+    (transpose-lines 1)
+    (forward-line -2)
+    (indent-according-to-mode))
 
+  (defun move-line-down ()
+    "Move down the current line."
+    (interactive)
+    (forward-line 1)
+    (transpose-lines 1)
+    (forward-line -1)
+    (indent-according-to-mode))
+
+  (global-set-key (kbd "C-M-p") 'move-line-up)
+  (global-set-key (kbd "C-M-o") 'move-line-down)
   (global-set-key (kbd "C-M-i") 'ido-goto-symbol)
-  (global-set-key (kbd "C-c C-r") 'comment-region)
+  (global-set-key (kbd "C-c C-m") 'comment-region)
   (global-set-key (kbd "C-c C-u") 'uncomment-region)
   (global-set-key "\C-x=" '(set-frame-width (selected-frame) 82))
   (global-set-key (kbd "M-]") 'forward-paragraph)
   (global-set-key (kbd "M-[") 'backward-paragraph)
+  (global-set-key (kbd "M-n") 'forward-paragraph)
+  (global-set-key (kbd "M-p") 'backward-paragraph)
   (global-set-key (kbd "C-c C-k") 'zap-up-to-char)
 
   ;; searching
@@ -228,15 +252,15 @@
   (setq alchemist-key-command-prefix (kbd "C-c ;"))
   (add-hook 'after-init-hook 'global-company-mode)
 
-  ;; activate jedi for python files
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (setq jedi:complete-on-dot t)
-
+  ;; more custom hooks
   (add-hook 'after-init-hook 'turn-on-fci-mode)
+  (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
   ;; custom js2 bindings
   (setq js2-strict-missing-semi-warning t)
 
+  ;; quick-toggle btw to last buffer
+  (global-set-key (kbd "C-'") 'mode-line-other-buffer)
   )
 
 
@@ -245,7 +269,17 @@
  This function is called at the very end of Spacemacs initialization after
 layers configuration."
   (set-fill-column 80)
-)
+  (auto-fill-mode 1)
+  (add-hook 'python-mode-hook (lambda ()
+                                (require 'sphinx-doc)
+                                (sphinx-doc-mode t)))
+  (color-theme-initialize)
+  (color-theme-charcoal-black)
+  (add-to-list 'auto-mode-alist
+               (cons (concat "\\." (regexp-opt '("xml" "xsd" "sch" "rng" "xslt" "svg" "rss" "launch") t) "\\'")
+                                         'nxml-mode))
+  )
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -261,7 +295,10 @@ layers configuration."
  '(ahs-inhibit-face-list nil)
  '(custom-safe-themes
    (quote
-    ("05c3bc4eb1219953a4f182e10de1f7466d28987f48d647c01f1f0037ff35ab9a" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "3f630e9f343200ce27cfeb44f01c9046a4b2687a4751ba2b30e503da307cd27b" default)))
+    ("05c3bc4eb1219953a4f182e10de1f7466d28987f48d647c01f1f0037ff35ab9a"
+ "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0"
+ "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4"
+ "3f630e9f343200ce27cfeb44f01c9046a4b2687a4751ba2b30e503da307cd27b" default)))
  '(js2-basic-offset 2)
  '(js2-missing-semi-one-line-override t)
  '(js2-strict-missing-semi-warning nil t)
@@ -275,3 +312,4 @@ layers configuration."
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
 
+ 
